@@ -1,0 +1,34 @@
+# Ignorar node_modules en ambos proyectos
+**/node_modules/
+whatsapp-bot/
+**/.wwebjs_auth/
+**/.wwebjs_cache/
+# Ignorar otros archivos innecesarios
+.DS_Store
+Thumbs.db
+
+
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
