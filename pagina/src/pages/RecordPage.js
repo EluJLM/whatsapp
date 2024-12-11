@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import Input from '../components/Inputs';
+import "./style.css"
 
 const RecordPage = () => {
-    const { codigo, linkngrok, name, address, description, alternative } = useParams();
+    const { linkngrok, codigo, number, name, alternative, email, address, description} = useParams();
     const navigate = useNavigate();
     
     const [formData, setFormData] = useState({
         codigo: codigo || '',
         name: name || '',
+        number: number || '',
+        alternative: alternative || '',
+        email: email || '',
         address: address || '',
         description: description || '',
-        alternative: alternative || ''
     });
-
+    
 
     useEffect(() => {
         const newUrl = window.location.pathname.split('/').slice(0, 2).join('/');
         window.history.replaceState(null, '', newUrl);
     }, [codigo, linkngrok, name, address, description, alternative, navigate]);
 
-   // Manejar cambios en los inputs
    const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -29,8 +32,6 @@ const RecordPage = () => {
         [name]: value,
     }));
 
-    // Aquí puedes imprimir el valor actual que se está procesando
-    console.log(`Actualizando campo: ${name} con valor: ${value}`);
     };
 
 // Manejar el envío del formulario
@@ -52,53 +53,52 @@ const handleSubmit = (e) => {
 };
 
 return (
-    <div>
+    <div className='conten'>
         <h1>Formulario de Registro</h1>
         <form onSubmit={handleSubmit}>
             <div>
-                <label>
-                    Nombre:
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                    />
-                </label>
+                {formData.number}
             </div>
-            <div>
-                <label>
-                    Dirección:
-                    <input
-                        type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                    />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Descripción:
-                    <input
-                        type="text"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                    />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Alternativo:
-                    <input
-                        type="text"
-                        name="alternative"
-                        value={formData.alternative}
-                        onChange={handleChange}
-                    />
-                </label>
-            </div>
+            <Input 
+                label="Nombre:"
+                type="text"
+                name="name"
+                placeholder={"Pedro Perez"}
+                value={formData.name}
+                onChange={handleChange}
+            />
+            <Input 
+                label="Alternativo:"
+                type="text"
+                name="alternative"
+                placeholder={"otro numero"}
+                value={formData.alternative}
+                onChange={handleChange}
+            />
+            <Input 
+                label="email:"
+                type="email"
+                name="email"
+                placeholder={"predroperes@gmail.com"}
+                value={formData.email}
+                onChange={handleChange}
+            />
+            <Input
+                label="Dirreción:"
+                type="text"
+                name="address"
+                placeholder={"calle 30 #41-41"}
+                value={formData.address}
+                onChange={handleChange}
+            />
+            <Input  
+                label="Descripción:"
+                type="text"
+                name="description"
+                placeholder={"apartamento 501 torre 5"}
+                value={formData.description}
+                onChange={handleChange}
+            />
             <button type="submit">Enviar</button>
         </form>
     </div>

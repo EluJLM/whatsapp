@@ -1,4 +1,4 @@
-let primeraBienvenida = `🌟 *¡Bienvenido a Parma!* 🌟
+let primeraBienvenida = `🌟 *¡Bienvenido a TU BOT!* 🌟
 👋 ¿En qué te puedo ayudar hoy? Envia:
 
     1️⃣ *Registrarte* para disfrutar de nuestros servicios.
@@ -10,6 +10,20 @@ let primeraBienvenida = `🌟 *¡Bienvenido a Parma!* 🌟
 
 ¡Gracias por elegir Parma! 😊
 `;
+const link = (link, editar) => {
+    if(editar){
+return (`Por favor accede a este link
+
+${link}
+
+y actualiza tus datos
+`)}
+    return (`Por favor accede a este link
+
+${link}
+
+y completa tus datos para registarte
+`)};
 const Bienvenida = (dt) => `🌟 *¡Te damos la bienvenida a Parma!* 🌟
 👋 ¿${dt.name} en qué te puedo ayudar hoy?
 
@@ -62,6 +76,10 @@ El valor *${dt}* se ha actualizado correctamente.
 Puedes continuar editando otros valores o, si ya has terminado, envía *OK* para finalizar y guardar todos tus datos.`;
 }
 
+const Adios = () => {
+    return`adios si deseas seguir con el bot envia un hello`;
+}
+
 let mensajeDefault = `Este menu no esta listo`;
 
 module.exports = {
@@ -71,5 +89,7 @@ module.exports = {
     verifica,
     Actualizo,
     confirma,
-    Bienvenida
+    Bienvenida,
+    Adios,
+    link
 }

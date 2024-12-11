@@ -15,10 +15,11 @@ db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
         phone TEXT PRIMARY KEY,
         name TEXT,
-        address TEXT,
-        alternate_phone TEXT,
+        alternative TEXT,
         email TEXT,
-        last_order TEXT
+        address TEXT,
+        description TEXT,
+        location TEXT
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS chat_logs (
@@ -35,19 +36,19 @@ db.serialize(() => {
     )`);    
 });
 
-// Creando los logs
-const getLogs = (phone, callback) => {
-    const sq = `SELECT state FROM logs WHERE phone = ?`;
 
-    db.get(sq, [phone], (err, row) => {
+//Make users
+const getUsers = (phone, callback) => {
+    db.get(`SELECT * FROM users WHERE phone = ?`, [phone], (err, row) =>{
         if (!row) {
-            const sqInsert =  `INSERT INTO logs (phone, state) VALUES (?, ?)`;
-            db.run(sqInsert, [phone, "new"], function(insertErr) {
+            db.run(`INSERT INTO users (phone, name, alternative, email, address, description, location) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [phone, "", "", "", "", "", ""],
+                (insertErr) => {
                 if (insertErr) {
-                    console.error("Error en la inserción:", insertErr.message);
+                    console.error("Error en la inserción User:", insertErr.message);
                     return callback(null);
                 }
-                return callback({ state: "new"});
+                return callback({ name: "", alternative: "", email: "", address: "", description: "", location: ""});
             });
         } else {
             // Si el usuario ya existe, devuelve el registro encontrado
@@ -55,10 +56,65 @@ const getLogs = (phone, callback) => {
         }
         if (err) {
             // Si hay un error en la consulta inicial, muestra el error y devuelve null
-            console.error("Error en la consulta SELECT:", err.message);
+            console.error("Error en la consulta users SELECT:", err.message);
             return callback(null);
         }
+    });
+};
+const setUsers = (phone, name, alternative, email, address, description) => {
+    db.run(`UPDATE users SET name = ?, alternative = ?, email = ?, address = ?, description = ? WHERE phone = ?`,
+        [name, alternative, email, address, description, phone],
+        (err) => {
+        if (err) {
+            console.error("Error al actualizar Users", err.message);
+        } else {
+            console.log(`User actuaizado para: ${phone}`);
+        }
+    });
+};
+const setUserslocation = (phone, location) => {
+    db.run(`UPDATE users SET location = ? WHERE phone = ?`,
+        [location, phone],
+        (err) => {
+        if (err) {
+            console.error("Error al actualizar Users Location", err.message);
+        } else {
+            console.log(`User location actuaizado para: ${phone}`);
+        }
+    });
+};
 
+
+
+// Creando los logs
+const getLogs = (phone, callback) => {
+    db.get(`SELECT state FROM logs WHERE phone = ?`, [phone], (err, row) => {
+        if (!row) {
+            db.run(`INSERT INTO logs (phone, state) VALUES (?, ?)`, [phone, "hello"], function(insertErr) {
+                if (insertErr) {
+                    console.error("Error en la inserción:", insertErr.message);
+                    return callback(null);
+                }
+                return callback({ state: "hello"});
+            });
+        } else {
+            // Si el usuario ya existe, devuelve el registro encontrado
+            return callback(row);
+        }
+        if (err) {
+            // Si hay un error en la consulta inicial, muestra el error y devuelve null
+            console.error("Error en la consulta logs SELECT:", err.message);
+            return callback(null);
+        }
+    });
+};
+const setLogs = (phone, state) => {
+    db.run(`UPDATE logs SET state = ? WHERE phone = ?`, [state, phone], (err) => {
+        if (err) {
+            console.error("Error al cambiar estado", err.message);
+        } else {
+            console.log(`estado actuaizado para: ${phone}`);
+        }
     });
 };
 
@@ -74,5 +130,9 @@ function logChat(timestamp, message, type) {
 
 module.exports = {
     logChat,
-    getLogs
+    getLogs,
+    setLogs,
+    getUsers,
+    setUsers,
+    setUserslocation
 };

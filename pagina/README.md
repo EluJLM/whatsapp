@@ -1,70 +1,63 @@
-# Getting Started with Create React App
+# Getting Started with Create React App y deploy to Firebase
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
+### `npm install`
+esto instalara todos lo necesarrio
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+para iniciar el desarrollo si deseas
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+esto creta la carpeta `build` que se manda a firebase
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## `deploy to Firebase`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `firebase init`
 
-### `npm run eject`
+Are you ready to proceed? (Y/n) -> you write 'Y';
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+>( ) Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys -> yo press space
+>(*) Hosting: Configure files for .... -> you press enter
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+What do you want to use as your public directory? (public) -> you delect the word public and you write build and you press enter
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+? Configure as a single-page app (rewrite all urls to /index.html)? (y/N)  you write N
+? Configure as a single-page app (rewrite all urls to /index.html)? No
+? Set up automatic builds and deploys with GitHub? No
+? File build/404.html already exists. Overwrite? No
+i  Skipping write of build/404.html
+? File build/index.html already exists. Overwrite? No
+i  Skipping write of build/index.html
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+i  Writing configuration info to firebase.json...
+i  Writing project information to .firebaserc...
 
-## Learn More
++  Firebase initialization complete!
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### `Update the firebase.json file to`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+{
+  "hosting": {
+    "public": "build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+this is done so that Firebase sends any router to the index
 
-### Code Splitting
+### `firebase deploy` 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+and that'is it, you can test the application if you already have the bot running
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

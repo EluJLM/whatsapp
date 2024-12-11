@@ -4,7 +4,8 @@ const qrcode = require('qrcode-terminal');
 const ngrok = require('ngrok');
 const cors = require('cors')
 const bodyParser = require('body-parser');
-const { getLogs } = require('./database');
+const { getLogs, setLogs, getUsers } = require('./database');
+const { primeraBienvenida, Adios, link } = require('./mensajes');
 
 const app = express();
 const port = 3100;
@@ -21,10 +22,9 @@ app.use(cors({
 */
 
 app.post('/record', (req, res) => {
-    const { codigo, name, address, description, alternative } = req.body;
+    const { codigo, name, number, alternative, email, address, description } = req.body;
 
-    // Verificar si faltan datos
-    if (!codigo || !name || !address || !description || !alternative) {
+    if (!codigo || !name || !address || !description|| !number || !alternative || !email) {
         return res.status(400).json({ error: 'Faltan datos en el formulario' });
     }
 
@@ -32,12 +32,16 @@ app.post('/record', (req, res) => {
     console.log('Datos recibidos:');
     console.log(`Código: ${codigo}`);
     console.log(`Nombre: ${name}`);
+    console.log(`Numero: ${number}`);
+    console.log(`Alternativo: ${alternative}`);
     console.log(`Dirección: ${address}`);
     console.log(`Descripción: ${description}`);
-    console.log(`Alternativo: ${alternative}`);
+    console.log(`Email: ${email}`);
 
     // Responder al cliente
     res.json({ message: 'Datos recibidos correctamente', data: req.body });
+
+    //eliminarCodigo(codigo);
 });
 
 // Inicializar WhatsApp Web client
@@ -47,7 +51,7 @@ const client = new Client({
 
 // Variable para almacenar la URL de ngrok
 let ngrokUrl = '';
-const baseUrl = 'http://192.168.1.23:3001/record';
+const baseUrl = 'http://rusbel.web.app/record';
 
 // Mostrar código QR para autenticar
 client.on('qr', (qr) => {
@@ -71,16 +75,47 @@ client.on('ready', () => {
 
 client.on('message', (message) => {
     console.log(`Mensaje recibido de ${message.from}: ${message.body}`);
-    const formattedLink = `${baseUrl}/null/${ngrokUrl}/null/null/null/null`;
-
-    getLogs(message.from, async (dt) => {
-        console.log("en base" + dt.state);
-    })
-    if (message.body.toLowerCase() === 'hola' && ngrokUrl) {
-        //client.sendMessage(message.from, `¡Hola! Accede a nuestro servicio en: ${formattedLink}`);
-    } else if (!ngrokUrl) {
-        console.log('Aún no se ha obtenido la URL de ngrok.');
+    const number = message.from.replace("57", "").replace("@c.us", "");
+    const receivedMessage = message.body.toLowerCase();
+    if(number !== "3022547603"){
+        return;
     }
+
+    if(receivedMessage === noEnviarMensaje){
+        setLogs(number, noEnviarMensaje);
+        message.reply(Adios);
+        return;
+    }
+    if(receivedMessage === EnviarMensaje){
+        setLogs(number, EnviarMensaje);
+    }
+
+    getLogs(number, (dt) => {
+        console.log("en base " + dt.state);
+        
+        if(dt.state === noEnviarMensaje){
+            return;
+        }
+        if(receivedMessage === "1"){
+            //grsistar o editar
+            getUsers(number, (dt) => {
+                if(dt.name === ""){
+                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number*1)}/${decimalToHex(number)}`;
+                    client.sendMessage(message.from, link(linktosend, false));
+                }else{
+                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number)}/${decimalToHex(number)}/${dt.name}/${decimalToHex(dt.alternative)}/${dt.email}/${dt.address}/${dt.description}`;
+                    client.sendMessage(message.from, link(linktosend, true));
+                }
+            });
+            return;
+        }
+
+        if(dt.state === EnviarMensaje){
+            message.reply("Por favor seleciona una de las opciones");
+            client.sendMessage(message.from, primeraBienvenida);
+        }
+        
+    })
 });
 
 // Manejar errores
@@ -89,24 +124,6 @@ client.on('disconnected', () => console.log('WhatsApp desconectado.'));
 
 // Iniciar cliente
 client.initialize();
-
-// Ruta para recibir datos del formulario
-app.post('/formulario', async (req, res) => {
-    const { telefono, mensaje } = req.body;
-
-    if (!telefono || !mensaje) {
-        return res.status(400).send('Faltan campos en el formulario.');
-    }
-
-    try {
-        const numeroConFormato = `${telefono}@c.us`; // Formato requerido por WhatsApp
-        await client.sendMessage(numeroConFormato, mensaje);
-        res.send('Mensaje enviado correctamente.');
-    } catch (error) {
-        console.error('Error enviando mensaje:', error);
-        res.status(500).send('Error enviando mensaje.');
-    }
-});
 
 // Iniciar servidor
 app.listen(port, () => {
@@ -117,7 +134,7 @@ app.listen(port, () => {
 // generador de codigos para la verificcion
 const codigosGenerados = [];
 
-function generarCodigoUnico() {
+function generarCodigo(parametro) {
   const caracteresPermitidos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~';
   let codigo;
 
@@ -127,32 +144,41 @@ function generarCodigoUnico() {
       const indiceAleatorio = Math.floor(Math.random() * caracteresPermitidos.length);
       codigo += caracteresPermitidos[indiceAleatorio];
     }
-  } while (codigosGenerados.includes(codigo)); // Repetir si el código ya existe
+  } while (codigosGenerados.some(([cod]) => cod === codigo)); // Repetir si el código ya existe
 
-  // Agregar el código único al array
-  codigosGenerados.push(codigo);
-  console.log(`Código generado: ${codigo}`);
+  // Agregar el código único y el parámetro al array
+  codigosGenerados.push([codigo, parametro]);
+  console.log(codigosGenerados);
 
   // Programar eliminación del código después de 5 segundos
   setTimeout(() => {
     eliminarCodigo(codigo, true); // Intentar eliminar el código (silencioso si ya no existe)
-  }, 5000);
+  }, 1000*60*5);
 
   return codigo;
 }
+
 function obtenerUltimoCodigo() {
-    if (codigosGenerados.length > 0) {
-      return codigosGenerados[codigosGenerados.length - 1];
-    } else {
-      return null; // Si el array está vacío
-    }
+  if (codigosGenerados.length > 0) {
+    const [codigo, parametro] = codigosGenerados[codigosGenerados.length - 1];
+    return { codigo, parametro }; // Retornar el último código y parámetro
+  } else {
+    return null; // Si el array está vacío
   }
+}
+
 function eliminarCodigo(codigo, silencioso = false) {
-  const index = codigosGenerados.indexOf(codigo);
+  const index = codigosGenerados.findIndex(([cod]) => cod === codigo);
   if (index !== -1) {
-    codigosGenerados.splice(index, 1); // Eliminar el código del array
-    console.log(`Código eliminado: ${codigo}`);
+    const eliminado = codigosGenerados.splice(index, 1)[0]; // Eliminar el código y parámetro del array
+    console.log(`Código eliminado: ${eliminado[0]}, Parámetro: ${eliminado[1]}`);
   } else if (!silencioso) {
     console.error(`Error: El código "${codigo}" no existe o ya fue eliminado.`);
   }
 }
+const decimalToHex = (decimal) => {
+    return decimal.toString(16).toUpperCase(); // Convierte decimal a hexadecimal
+};
+
+const noEnviarMensaje = "bay";
+const EnviarMensaje = "hello";

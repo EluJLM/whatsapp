@@ -1,0 +1,19 @@
+.inputs-conten{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 20px 0px;
+    & label { 
+        margin-right: 10px;
+    }
+    & input {
+        padding: 10px;
+        border: 0;
+        outline: none;
+        border-bottom: 2px solid rgb(44, 44, 44);
+    }
+    & input:focus {
+        border-bottom: 2px solid #007fff;
+    }
+}
