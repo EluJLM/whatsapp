@@ -1,14 +1,13 @@
 .inputs-conten{
     width: 100%;
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
     margin: 20px 0px;
     & label { 
         margin-right: 10px;
     }
     & input {
-        padding: 10px;
+        padding: 10px 10px 1px 10px;
         border: 0;
         outline: none;
         border-bottom: 2px solid rgb(44, 44, 44);
@@ -17,3 +16,16 @@
         border-bottom: 2px solid #007fff;
     }
 }
+.inputs-conten.valid input {
+    border-color: green;
+  }
+  
+  .inputs-conten.invalid input {
+    border-color: red;
+  }
+  
+  .alert-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+  }

@@ -24,8 +24,13 @@ app.use(cors({
 app.post('/record', (req, res) => {
     const { codigo, name, number, alternative, email, address, description } = req.body;
 
-    if (!codigo || !name || !address || !description|| !number || !alternative || !email) {
-        return res.status(400).json({ error: 'Faltan datos en el formulario' });
+
+    //if (!codigo || !name || !address || !description|| !number || !alternative || !email) {
+    //    return res.status(400).json({ error: 'Faltan datos en el formulario' });
+    //}
+
+    if(codigosGenerados.findIndex(([element]) => element === codigo) === -1){
+        return res.status(400).json({ error: 'ese codigo es falso' });
     }
 
     // Imprimir los datos recibidos en la consola
@@ -74,13 +79,13 @@ client.on('ready', () => {
 });
 
 client.on('message', (message) => {
-    console.log(`Mensaje recibido de ${message.from}: ${message.body}`);
+    
     const number = message.from.replace("57", "").replace("@c.us", "");
     const receivedMessage = message.body.toLowerCase();
     if(number !== "3022547603"){
         return;
     }
-
+    console.log(`Mensaje recibido de ${message.from}: ${message.body}`);
     if(receivedMessage === noEnviarMensaje){
         setLogs(number, noEnviarMensaje);
         message.reply(Adios);

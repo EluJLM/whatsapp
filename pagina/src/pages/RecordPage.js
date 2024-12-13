@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Input from '../components/Inputs';
 import "./style.css"
+import expRegulares from '../utilidades/expresionesRegulares';
 
 const RecordPage = () => {
     const { linkngrok, codigo, number, name, alternative, email, address, description} = useParams();
     const navigate = useNavigate();
-    
+    const whatsapp = "3169525151";
     const [formData, setFormData] = useState({
         codigo: codigo || '',
         name: name || '',
@@ -16,7 +17,6 @@ const RecordPage = () => {
         address: address || '',
         description: description || '',
     });
-    
 
     useEffect(() => {
         const newUrl = window.location.pathname.split('/').slice(0, 2).join('/');
@@ -37,6 +37,9 @@ const RecordPage = () => {
 // Manejar el envío del formulario
 const handleSubmit = (e) => {
     console.log(formData);
+    if(formData.name === ""){
+
+    }
     e.preventDefault();
     if (linkngrok) {
         fetch(`https://${linkngrok.replace(/p/g, "-")}.ngrok-free.app/record`, {
@@ -53,22 +56,25 @@ const handleSubmit = (e) => {
 };
 
 return (
+    codigo !== undefined ?
     <div className='conten'>
-        <h1>Formulario de Registro</h1>
+        <h2>Formulario de Registro</h2>
         <form onSubmit={handleSubmit}>
             <div>
-                {formData.number}
+                Para el {formData.number}
             </div>
             <Input 
-                label="Nombre:"
+                label="Nombre"
                 type="text"
                 name="name"
                 placeholder={"Pedro Perez"}
                 value={formData.name}
                 onChange={handleChange}
+                validationRule={expRegulares.name}
+                alertText="Debes ingresar tu nombre y apellido"
             />
             <Input 
-                label="Alternativo:"
+                label="Numero Alternativo"
                 type="text"
                 name="alternative"
                 placeholder={"otro numero"}
@@ -76,7 +82,7 @@ return (
                 onChange={handleChange}
             />
             <Input 
-                label="email:"
+                label="email"
                 type="email"
                 name="email"
                 placeholder={"predroperes@gmail.com"}
@@ -84,7 +90,7 @@ return (
                 onChange={handleChange}
             />
             <Input
-                label="Dirreción:"
+                label="Dirreción"
                 type="text"
                 name="address"
                 placeholder={"calle 30 #41-41"}
@@ -92,7 +98,7 @@ return (
                 onChange={handleChange}
             />
             <Input  
-                label="Descripción:"
+                label="Descripción"
                 type="text"
                 name="description"
                 placeholder={"apartamento 501 torre 5"}
@@ -101,7 +107,9 @@ return (
             />
             <button type="submit">Enviar</button>
         </form>
-    </div>
+    </div> : <div>Hola por favor ve a este whatsapp <a href={`https://wa.me/57${whatsapp}?text=Hola`}>{whatsapp}</a> y seleciona opcion 1 para tener un formulario valido</div>
+
+    
 );
 };
 
