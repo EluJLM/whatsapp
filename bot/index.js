@@ -4,7 +4,7 @@ const qrcode = require('qrcode-terminal');
 const ngrok = require('ngrok');
 const cors = require('cors')
 const bodyParser = require('body-parser');
-const { getLogs, setLogs, getUsers } = require('./database');
+const { getLogs, setLogs, getUsers, setUsers } = require('./database');
 const { primeraBienvenida, Adios, link } = require('./mensajes');
 
 const app = express();
@@ -45,8 +45,11 @@ app.post('/record', (req, res) => {
 
     // Responder al cliente
     res.json({ message: 'Datos recibidos correctamente', data: req.body });
+    console.log(`despues del la respuesta`);
 
-    //eliminarCodigo(codigo);
+    setUsers(number, name, alternative, email, address, description);
+    eliminarCodigo(codigo);
+    client.sendMessage(`57${number}@c.us`, `Hola ${name}, tu registro a sido exitoso! `);
 });
 
 // Inicializar WhatsApp Web client

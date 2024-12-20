@@ -1,45 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Input from '../components/Inputs';
-import "./style.css"
+import "./style.css";
 import expRegulares from '../utilidades/expresionesRegulares';
 
 const RecordPage = () => {
-    const { linkngrok, codigo, number, name, alternative, email, address, description} = useParams();
-    const navigate = useNavigate();
-    const whatsapp = "3169525151";
-    const [formData, setFormData] = useState({
-        codigo: codigo || '',
-        name: name || '',
-        number: number || '',
-        alternative: alternative || '',
-        email: email || '',
-        address: address || '',
-        description: description || '',
-    });
+  const { linkngrok, codigo, number, name, alternative, email, address, description } = useParams();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const newUrl = window.location.pathname.split('/').slice(0, 2).join('/');
-        window.history.replaceState(null, '', newUrl);
-    }, [codigo, linkngrok, name, address, description, alternative, navigate]);
+  // Estado del formulario
+  const [formData, setFormData] = useState({
+    codigo: codigo || '',
+    name: name || '',
+    number: number || '',
+    alternative: alternative || '',
+    email: email || '',
+    address: address || '',
+    description: description || 'Opcional',
+  });
 
-   const handleChange = (e) => {
+  // Estado de validación
+  const [validationStatus, setValidationStatus] = useState({
+    name: false,
+    alternative: false,
+    email: false,
+    address: false,
+    description: true, // Opcional, puede ser siempre válido
+  });
+
+  useEffect(() => {
+    const newUrl = window.location.pathname.split('/').slice(0, 2).join('/');
+    window.history.replaceState(null, '', newUrl);
+  }, [codigo, linkngrok, name, address, description, alternative, navigate]);
+
+  // Manejar cambios en los campos del formulario
+  const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Actualiza el estado
     setFormData((prevState) => ({
-        ...prevState,
-        [name]: value,
+      ...prevState,
+      [name]: value,
     }));
+  };
 
-    };
+  // Manejar la validación de cada campo
+  const handleValidation = (name, isValid) => {
+    setValidationStatus((prevState) => ({
+      ...prevState,
+      [name]: isValid,
+    }));
+  };
 
-// Manejar el envío del formulario
+  // Manejar el envío del formulario
 const handleSubmit = (e) => {
     console.log(formData);
-    if(formData.name === ""){
-
-    }
     e.preventDefault();
     if (linkngrok) {
         fetch(`https://${linkngrok.replace(/p/g, "-")}.ngrok-free.app/record`, {
@@ -55,62 +68,67 @@ const handleSubmit = (e) => {
     }
 };
 
-return (
-    codigo !== undefined ?
-    <div className='conten'>
+  return (
+      <div className='conten'>
         <h2>Formulario de Registro</h2>
         <form onSubmit={handleSubmit}>
-            <div>
-                Para el {formData.number}
-            </div>
-            <Input 
-                label="Nombre"
-                type="text"
-                name="name"
-                placeholder={"Pedro Perez"}
-                value={formData.name}
-                onChange={handleChange}
-                validationRule={expRegulares.name}
-                alertText="Debes ingresar tu nombre y apellido"
-            />
-            <Input 
-                label="Numero Alternativo"
-                type="text"
-                name="alternative"
-                placeholder={"otro numero"}
-                value={formData.alternative}
-                onChange={handleChange}
-            />
-            <Input 
-                label="email"
-                type="email"
-                name="email"
-                placeholder={"predroperes@gmail.com"}
-                value={formData.email}
-                onChange={handleChange}
-            />
-            <Input
-                label="Dirreción"
-                type="text"
-                name="address"
-                placeholder={"calle 30 #41-41"}
-                value={formData.address}
-                onChange={handleChange}
-            />
-            <Input  
-                label="Descripción"
-                type="text"
-                name="description"
-                placeholder={"apartamento 501 torre 5"}
-                value={formData.description}
-                onChange={handleChange}
-            />
-            <button type="submit">Enviar</button>
+          <div>
+            Para el {formData.number}
+          </div>
+          <Input
+            label="Nombre"
+            type="text"
+            name="name"
+            placeholder="Pedro Perez"
+            value={formData.name}
+            onChange={handleChange}
+            onValidate={handleValidation}
+            validationRule={expRegulares.name}
+          />
+          <Input
+            label="Numero Alternativo"
+            type="number"
+            name="alternative"
+            placeholder="Otro número"
+            value={formData.alternative}
+            onChange={handleChange}
+            onValidate={handleValidation}
+            validationRule={expRegulares.number}
+          />
+          <Input
+            label="Email"
+            type="email"
+            name="email"
+            placeholder="pedro@gmail.com"
+            value={formData.email}
+            onChange={handleChange}
+            onValidate={handleValidation}
+            validationRule={expRegulares.email}
+          />
+          <Input
+            label="Dirección"
+            type="text"
+            name="address"
+            placeholder="Calle 30 #41-41"
+            value={formData.address}
+            onChange={handleChange}
+            onValidate={handleValidation}
+            validationRule={expRegulares.address}
+          />
+          <Input
+            label="Descripción"
+            type="text"
+            name="description"
+            placeholder="Opcional. Ejemplo: Frente a la cancha."
+            value={formData.description}
+            onChange={handleChange}
+          />
+          <button type="submit" disabled={!Object.values(validationStatus).every((status) => status)}>
+            Enviar
+          </button>
         </form>
-    </div> : <div>Hola por favor ve a este whatsapp <a href={`https://wa.me/57${whatsapp}?text=Hola`}>{whatsapp}</a> y seleciona opcion 1 para tener un formulario valido</div>
-
-    
-);
+      </div>
+  );
 };
 
 export default RecordPage;
