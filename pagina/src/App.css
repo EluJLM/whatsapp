@@ -1,4 +1,14 @@
 
-
-
+ul{
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    list-style: none;
+    font-size: 20px;
+    background: var(--color-primary);
+    padding: 10px;
+}
+ul a{
+    color: white;
+}
 

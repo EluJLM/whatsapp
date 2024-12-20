@@ -8,18 +8,20 @@ const Input = ({
   type, 
   label, 
   placeholder, 
-  alertText, 
-  validationRule 
+  validationRule, 
+  onValidate 
 }) => {
+
   const [isValid, setIsValid] = useState(null); // null: sin validar, true: válido, false: inválido
 
   const handleBlur = () => {
     if (validationRule) {
-      const regex = new RegExp(validationRule); // Crear regex con la regla proporcionada
-      setIsValid(regex.test(value)); // Validar el valor y actualizar el estado
+      const regex = new RegExp(validationRule.exp); // Crear regex con la regla proporcionada
+      const valid = regex.test(value); // Validar el valor
+      setIsValid(valid); // Actualizar el estado interno
+      onValidate(name, valid); // Notificar al padre sobre el estado de validación
     }
   };
-
   return (
     <div className={`inputs-conten ${isValid === true ? "valid" : isValid === false ? "invalid" : ""}`}>
       <label>{label}</label>
@@ -31,7 +33,7 @@ const Input = ({
         onChange={onChange}
         onBlur={handleBlur} // Validar al perder el foco
       />
-      {isValid === false && <span className="alert-text">{alertText}</span>} {/* Mostrar alerta si no es válido */}
+      {isValid === false && <span className="alert-text">{validationRule.text}</span>} {/* Mostrar alerta si no es válido */}
     </div>
   );
 };

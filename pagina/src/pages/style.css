@@ -5,3 +5,10 @@
     flex-direction: column;
     align-items: center;
 }
+form{
+    width: 80%;
+}
+.conten h2{
+    color: #007fff;
+    margin: 10px;
+}
