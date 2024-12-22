@@ -4,6 +4,10 @@ import Input from '../components/Inputs';
 import "./style.css";
 import expRegulares from '../utilidades/expresionesRegulares';
 
+const hexToDecimal = (hex) => {
+  return parseInt(hex, 16); // Convierte hexadecimal a decimal
+};
+
 const RecordPage = () => {
   const { linkngrok, codigo, number, name, alternative, email, address, description } = useParams();
   const navigate = useNavigate();
@@ -11,12 +15,12 @@ const RecordPage = () => {
   // Estado del formulario
   const [formData, setFormData] = useState({
     codigo: codigo || '',
-    name: name || '',
-    number: number || '',
-    alternative: alternative || '',
+    name: name ? name.replace(/_/g, " ") : '',
+    number: hexToDecimal(number) || '',
+    alternative: hexToDecimal(alternative) || '',
     email: email || '',
-    address: address || '',
-    description: description || 'Opcional',
+    address: address ? address.replace(/_/g, " ").replace("XZ", "#") : '',
+    description: description ? description.replace(/_/g, " ").replace("XZ", "#") : 'Opcional',
   });
 
   // Estado de validación
@@ -52,8 +56,13 @@ const RecordPage = () => {
 
   // Manejar el envío del formulario
 const handleSubmit = (e) => {
-    console.log(formData);
+    console.log(validationStatus);
     e.preventDefault();
+    if(!Object.values(validationStatus).every((status) => status)){
+      alert("por favor corrige tu formulacio");
+      handleValidation("name");
+      return;
+    }
     if (linkngrok) {
         fetch(`https://${linkngrok.replace(/p/g, "-")}.ngrok-free.app/record`, {
             method: 'POST',
@@ -123,7 +132,7 @@ const handleSubmit = (e) => {
             value={formData.description}
             onChange={handleChange}
           />
-          <button type="submit" disabled={!Object.values(validationStatus).every((status) => status)}>
+          <button type="submit">
             Enviar
           </button>
         </form>

@@ -62,6 +62,7 @@ const getUsers = (phone, callback) => {
     });
 };
 const setUsers = (phone, name, alternative, email, address, description) => {
+    console.log(phone, name, alternative, email, address, description);
     db.run(`UPDATE users SET name = ?, alternative = ?, email = ?, address = ?, description = ? WHERE phone = ?`,
         [name, alternative, email, address, description, phone],
         (err) => {

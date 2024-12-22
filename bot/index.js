@@ -47,9 +47,9 @@ app.post('/record', (req, res) => {
     res.json({ message: 'Datos recibidos correctamente', data: req.body });
     console.log(`despues del la respuesta`);
 
-    setUsers(number, name, alternative, email, address, description);
-    eliminarCodigo(codigo);
+    setUsers(number+"", name, alternative+"", email, address, description);
     client.sendMessage(`57${number}@c.us`, `Hola ${name}, tu registro a sido exitoso! `);
+    eliminarCodigo(codigo);
 });
 
 // Inicializar WhatsApp Web client
@@ -108,11 +108,11 @@ client.on('message', (message) => {
             //grsistar o editar
             getUsers(number, (dt) => {
                 if(dt.name === ""){
-                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number*1)}/${decimalToHex(number)}`;
+                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number)}/${decimalToHex(number*1)}`;
                     client.sendMessage(message.from, link(linktosend, false));
                 }else{
-                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number)}/${decimalToHex(number)}/${dt.name}/${decimalToHex(dt.alternative)}/${dt.email}/${dt.address}/${dt.description}`;
-                    client.sendMessage(message.from, link(linktosend, true));
+                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number)}/${decimalToHex(number*1)}/${dt.name}/${decimalToHex(dt.alternative*1)}/${dt.email}/${dt.address}/${dt.description}`;
+                    client.sendMessage(message.from, link(linktosend.replace(/ /g, "_").replace("#", "XZ"), true));
                 }
             });
             return;
@@ -186,6 +186,9 @@ function eliminarCodigo(codigo, silencioso = false) {
 }
 const decimalToHex = (decimal) => {
     return decimal.toString(16).toUpperCase(); // Convierte decimal a hexadecimal
+};
+const hexToDecimal = (hex) => {
+    return parseInt(hex, 16); // Convierte hexadecimal a decimal
 };
 
 const noEnviarMensaje = "bay";
