@@ -5,7 +5,7 @@ const ngrok = require('ngrok');
 const cors = require('cors')
 const bodyParser = require('body-parser');
 const { getLogs, setLogs, getUsers, setUsers } = require('./database');
-const { primeraBienvenida, Adios, link } = require('./mensajes');
+const { primeraBienvenida, Adios, link, RegistroExitoso } = require('./mensajes');
 
 const app = express();
 const port = 3100;
@@ -48,7 +48,7 @@ app.post('/record', (req, res) => {
     console.log(`despues del la respuesta`);
 
     setUsers(number+"", name, alternative+"", email, address, description);
-    client.sendMessage(`57${number}@c.us`, `Hola ${name}, tu registro a sido exitoso! `);
+    client.sendMessage(`57${number}@c.us`, RegistroExitoso(req.body));
     eliminarCodigo(codigo);
 });
 
@@ -59,7 +59,7 @@ const client = new Client({
 
 // Variable para almacenar la URL de ngrok
 let ngrokUrl = '';
-const baseUrl = 'http://rusbel.web.app/record';
+const baseUrl = 'http://enlace-si.web.app/record';
 
 // Mostrar código QR para autenticar
 client.on('qr', (qr) => {
@@ -85,9 +85,9 @@ client.on('message', (message) => {
     
     const number = message.from.replace("57", "").replace("@c.us", "");
     const receivedMessage = message.body.toLowerCase();
-    if(number !== "3022547603"){
+    /*if(number !== "3022547603"){
         return;
-    }
+    }*/
     console.log(`Mensaje recibido de ${message.from}: ${message.body}`);
     if(receivedMessage === noEnviarMensaje){
         setLogs(number, noEnviarMensaje);
@@ -119,7 +119,6 @@ client.on('message', (message) => {
         }
 
         if(dt.state === EnviarMensaje){
-            message.reply("Por favor seleciona una de las opciones");
             client.sendMessage(message.from, primeraBienvenida);
         }
         

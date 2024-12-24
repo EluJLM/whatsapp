@@ -1,4 +1,4 @@
-import "./style.css";
+import "./record.css";
 const RecordDefault = () => {
     
   const whatsapp = "3169525151";

@@ -12,3 +12,13 @@ ul a{
     color: white;
 }
 
+button{
+    padding: 10px;
+    color: white;
+    background: var(--color-primary);
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 0 6px #00000077;
+    margin: 0 auto;
+}
