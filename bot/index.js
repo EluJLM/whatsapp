@@ -5,7 +5,7 @@ const ngrok = require('ngrok');
 const cors = require('cors')
 const bodyParser = require('body-parser');
 const { getLogs, setLogs, getUsers, setUsers } = require('./database');
-const { primeraBienvenida, Adios, link } = require('./mensajes');
+const { primeraBienvenida, Adios, link, RegistroExitoso } = require('./mensajes');
 
 const app = express();
 const port = 3100;
@@ -47,9 +47,9 @@ app.post('/record', (req, res) => {
     res.json({ message: 'Datos recibidos correctamente', data: req.body });
     console.log(`despues del la respuesta`);
 
-    setUsers(number, name, alternative, email, address, description);
+    setUsers(number+"", name, alternative+"", email, address, description);
+    client.sendMessage(`57${number}@c.us`, RegistroExitoso(req.body));
     eliminarCodigo(codigo);
-    client.sendMessage(`57${number}@c.us`, `Hola ${name}, tu registro a sido exitoso! `);
 });
 
 // Inicializar WhatsApp Web client
@@ -59,7 +59,7 @@ const client = new Client({
 
 // Variable para almacenar la URL de ngrok
 let ngrokUrl = '';
-const baseUrl = 'http://rusbel.web.app/record';
+const baseUrl = 'http://enlace-si.web.app/record';
 
 // Mostrar código QR para autenticar
 client.on('qr', (qr) => {
@@ -85,9 +85,9 @@ client.on('message', (message) => {
     
     const number = message.from.replace("57", "").replace("@c.us", "");
     const receivedMessage = message.body.toLowerCase();
-    if(number !== "3022547603"){
+    /*if(number !== "3022547603"){
         return;
-    }
+    }*/
     console.log(`Mensaje recibido de ${message.from}: ${message.body}`);
     if(receivedMessage === noEnviarMensaje){
         setLogs(number, noEnviarMensaje);
@@ -108,18 +108,17 @@ client.on('message', (message) => {
             //grsistar o editar
             getUsers(number, (dt) => {
                 if(dt.name === ""){
-                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number*1)}/${decimalToHex(number)}`;
+                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number)}/${decimalToHex(number*1)}`;
                     client.sendMessage(message.from, link(linktosend, false));
                 }else{
-                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number)}/${decimalToHex(number)}/${dt.name}/${decimalToHex(dt.alternative)}/${dt.email}/${dt.address}/${dt.description}`;
-                    client.sendMessage(message.from, link(linktosend, true));
+                    const linktosend = `${baseUrl}/${ngrokUrl}/${generarCodigo(number)}/${decimalToHex(number*1)}/${dt.name}/${decimalToHex(dt.alternative*1)}/${dt.email}/${dt.address}/${dt.description}`;
+                    client.sendMessage(message.from, link(linktosend.replace(/ /g, "_").replace("#", "XZ"), true));
                 }
             });
             return;
         }
 
         if(dt.state === EnviarMensaje){
-            message.reply("Por favor seleciona una de las opciones");
             client.sendMessage(message.from, primeraBienvenida);
         }
         
@@ -186,6 +185,9 @@ function eliminarCodigo(codigo, silencioso = false) {
 }
 const decimalToHex = (decimal) => {
     return decimal.toString(16).toUpperCase(); // Convierte decimal a hexadecimal
+};
+const hexToDecimal = (hex) => {
+    return parseInt(hex, 16); // Convierte hexadecimal a decimal
 };
 
 const noEnviarMensaje = "bay";
