@@ -1,9 +1,12 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
-import RecordPage from './pages/RecordPage.js';
+import RecordPage from './pages/record/RecordPage.js';
 
 import "./App.css"
-import RecordDefault from './pages/RecordDefault.js';
+import RecordDefault from './pages/record/RecordDefault.js';
+import Menu from './pages/menu/Menu.js';
+import MenuConfig from './pages/menu/MenuConfig.js';
+import { MenuProvider } from './pages/menu/MenuContext.js';
 
 const App = () => {
     return (
@@ -18,7 +21,7 @@ const App = () => {
                         <Link to="/record">Registrarse</Link>
                     </li>
                     <li>
-                        <Link to="/dashboard">Menu</Link>
+                        <Link to="/menu">Menu</Link>
                     </li>
                     <li>
                         <Link to="/profile">Informacion</Link>
@@ -26,11 +29,16 @@ const App = () => {
                     </ul>
                 </nav>
             </header>
-            <Routes>
-                <Route path="/record/" element={<RecordDefault />} />
-                <Route path="/record/:linkngrok/:codigo/:number" element={<RecordPage />} />
-                <Route path="/record/:linkngrok/:codigo/:number/:name/:alternative/:email/:address/:description" element={<RecordPage />} />
-            </Routes>
+            <MenuProvider>
+                <Routes>
+                    <Route path="/record/" element={<RecordDefault />} />
+                    <Route path="/record/:linkngrok/:codigo/:number" element={<RecordPage />} />
+                    <Route path="/record/:linkngrok/:codigo/:number/:name/:alternative/:email/:address/:description" element={<RecordPage />} />
+                    
+                    <Route path="/menu" element={<Menu />} />
+                    <Route path="/mc" element={<MenuConfig />} />
+                </Routes>
+            </MenuProvider>
         </div>
     );
 };

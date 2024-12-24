@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 
 const Input = ({ 
@@ -22,6 +22,11 @@ const Input = ({
       onValidate(name, valid); // Notificar al padre sobre el estado de validación
     }
   };
+  useEffect(()=> {
+    if(value !== ""){
+      handleBlur();
+    }
+  }, []);
   return (
     <div className={`inputs-conten ${isValid === true ? "valid" : isValid === false ? "invalid" : ""}`}>
       <label>{label}</label>

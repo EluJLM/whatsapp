@@ -1,22 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Input from '../components/Inputs';
-import "./style.css";
-import expRegulares from '../utilidades/expresionesRegulares';
+import Input from '../../components/Inputs';
+import "./record.css";
+import expRegulares from '../../utilidades/expresionesRegulares';
+import Modal from '../../components/modal/Modal';
+import useModal from '../../components/modal/useModal';
+
+const hexToDecimal = (hex) => {
+  return parseInt(hex, 16); // Convierte hexadecimal a decimal
+};
 
 const RecordPage = () => {
   const { linkngrok, codigo, number, name, alternative, email, address, description } = useParams();
   const navigate = useNavigate();
 
+  const [ isOpenOk, openModalOk, closeModalOk ] = useModal();
+  const [ isOpenAlert, openModalAlert, closeModalAlert ] = useModal();
+
   // Estado del formulario
   const [formData, setFormData] = useState({
     codigo: codigo || '',
-    name: name || '',
-    number: number || '',
-    alternative: alternative || '',
+    name: name ? name.replace(/_/g, " ") : '',
+    number: hexToDecimal(number) || '',
+    alternative: hexToDecimal(alternative) || '',
     email: email || '',
-    address: address || '',
-    description: description || 'Opcional',
+    address: address ? address.replace(/_/g, " ").replace("XZ", "#") : '',
+    description: description ? description.replace(/_/g, " ").replace("XZ", "#") : 'Opcional',
   });
 
   // Estado de validación
@@ -52,8 +61,13 @@ const RecordPage = () => {
 
   // Manejar el envío del formulario
 const handleSubmit = (e) => {
-    console.log(formData);
+    console.log(validationStatus);
     e.preventDefault();
+    if(!Object.values(validationStatus).every((status) => status)){
+      alert("por favor corrige tu formulacio");
+      handleValidation("name");
+      return;
+    }
     if (linkngrok) {
         fetch(`https://${linkngrok.replace(/p/g, "-")}.ngrok-free.app/record`, {
             method: 'POST',
@@ -63,8 +77,20 @@ const handleSubmit = (e) => {
             body: JSON.stringify(formData),
         })
             .then(response => response.json())
-            .then(data => console.log('Form POST response:', data))
-            .catch(error => console.error('Error in form POST:', error));
+            .then(data => {
+              openModalOk();
+              setTimeout(() => {
+                closeModalOk();
+              }, 5000);
+              //console.log('Form POST response:', data);
+            })
+            .catch(error => {
+              openModalAlert();
+              setTimeout(() => {
+                closeModalAlert();
+              }, 5000);
+              //console.error('Error in form POST:', error);
+            });
     }
 };
 
@@ -123,10 +149,25 @@ const handleSubmit = (e) => {
             value={formData.description}
             onChange={handleChange}
           />
-          <button type="submit" disabled={!Object.values(validationStatus).every((status) => status)}>
+          <button type="submit">
             Enviar
           </button>
         </form>
+
+        <Modal
+          isOpen={isOpenOk}
+          onClose={closeModalOk}
+          title="¡De Maravilla!"
+          text="Deves aver recivido un mensaje con tus datos :D"
+          css={"ok"}
+        />
+        <Modal
+          isOpen={isOpenAlert}
+          onClose={closeModalAlert}
+          title="Tu link esta vencido"
+          text="ve a whatsapp y pide uno nuevo"
+          css={"alert"}
+        />
       </div>
   );
 };
