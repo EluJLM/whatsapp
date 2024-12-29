@@ -31,5 +31,6 @@
     border: none;
     font-size: 20px;
     cursor: pointer;
+    color: var(--color-accent);
   }
   

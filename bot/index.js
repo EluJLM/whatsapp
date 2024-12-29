@@ -85,9 +85,9 @@ client.on('message', (message) => {
     
     const number = message.from.replace("57", "").replace("@c.us", "");
     const receivedMessage = message.body.toLowerCase();
-    /*if(number !== "3022547603"){
+    if(message.from === "status@broadcast"){
         return;
-    }*/
+    }
     console.log(`Mensaje recibido de ${message.from}: ${message.body}`);
     if(receivedMessage === noEnviarMensaje){
         setLogs(number, noEnviarMensaje);

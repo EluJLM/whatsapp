@@ -26,7 +26,7 @@ const Input = ({
     if(value !== ""){
       handleBlur();
     }
-  }, []);
+  });
   return (
     <div className={`inputs-conten ${isValid === true ? "valid" : isValid === false ? "invalid" : ""}`}>
       <label>{label}</label>

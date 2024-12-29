@@ -1,27 +1,24 @@
 import React, { useState, useContext } from 'react';
-import { MenuContext } from './MenuContext';
+import { MenuContext } from '../../utilidades/MenuContext';
+import SectionsEdit from './components/SectionsEdit';
 
 const MenuConfig = () => {
-  const { addSection, addPlate, menu, updatePlate } = useContext(MenuContext);
+  const { addNewTitle, addPlatesToSection, menu } = useContext(MenuContext);
   const [sectionTitle, setSectionTitle] = useState('');
   const [plate, setPlate] = useState({ name: '', description: '', price: '', section: '' });
 
   const handleAddSection = () => {
     if (sectionTitle) {
-      addSection({ title: sectionTitle, plates: [] });
-      setSectionTitle('');
+        addNewTitle(sectionTitle);
+        setSectionTitle('');
     }
   };
 
   const handleAddPlate = () => {
     if (plate.name && plate.section) {
-      addPlate(plate.section, plate);
-      setPlate({ name: '', description: '', price: '', section: '' });
+        addPlatesToSection(plate);
+        setPlate({ name: '', description: '', price: '', section: '' });
     }
-  };
-
-  const handleUpdatePlate = (sectionTitle, plateName, updatedData) => {
-    updatePlate(sectionTitle, plateName, updatedData);
   };
 
   return (
@@ -48,16 +45,15 @@ const MenuConfig = () => {
           onChange={(e) => setPlate({ ...plate, name: e.target.value })}
         />
         <input
-          type="text"
-          placeholder="Descripción"
-          value={plate.description}
-          onChange={(e) => setPlate({ ...plate, description: e.target.value })}
-        />
-        <input
           type="number"
           placeholder="Precio"
           value={plate.price}
           onChange={(e) => setPlate({ ...plate, price: e.target.value })}
+        />
+        <textarea
+          placeholder="Descripción"
+          value={plate.description}
+          onChange={(e) => setPlate({ ...plate, description: e.target.value })}
         />
         <select
           value={plate.section}
@@ -72,38 +68,13 @@ const MenuConfig = () => {
         </select>
         <button onClick={handleAddPlate}>Agregar Plato</button>
       </div>
-
       <div>
         <h2>Editar Platos</h2>
         {menu.map((section) => (
-          <div key={section.title}>
-            <h3>{section.title}</h3>
-            {section.plates.map((plate) => (
-              <div key={plate.name} style={{ marginBottom: '10px' }}>
-                <input
-                  type="text"
-                  value={plate.name}
-                  onChange={(e) =>
-                    handleUpdatePlate(section.title, plate.name, { name: e.target.value })
-                  }
-                />
-                <input
-                  type="text"
-                  value={plate.description}
-                  onChange={(e) =>
-                    handleUpdatePlate(section.title, plate.name, { description: e.target.value })
-                  }
-                />
-                <input
-                  type="number"
-                  value={plate.price}
-                  onChange={(e) =>
-                    handleUpdatePlate(section.title, plate.name, { price: e.target.value*1 })
-                  }
-                />
-              </div>
-            ))}
-          </div>
+          <SectionsEdit
+            key={section.title}
+            section={section}
+          />
         ))}
       </div>
     </div>

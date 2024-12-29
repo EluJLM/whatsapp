@@ -158,14 +158,14 @@ const handleSubmit = (e) => {
           isOpen={isOpenOk}
           onClose={closeModalOk}
           title="¡De Maravilla!"
-          text="Deves aver recivido un mensaje con tus datos :D"
+          text="Debes haber recibido un mensaje con tus datos."
           css={"ok"}
         />
         <Modal
           isOpen={isOpenAlert}
           onClose={closeModalAlert}
           title="Tu link esta vencido"
-          text="ve a whatsapp y pide uno nuevo"
+          text="Ve a WhatsApp y solicita un link nuevo."
           css={"alert"}
         />
       </div>

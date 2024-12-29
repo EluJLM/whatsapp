@@ -90,25 +90,26 @@ const setUserslocation = (phone, location) => {
 // Creando los logs
 const getLogs = (phone, callback) => {
     db.get(`SELECT state FROM logs WHERE phone = ?`, [phone], (err, row) => {
+        if (err) {
+            console.error("Error en la consulta logs SELECT:", err.message);
+            return callback(null); // Devuelve null si hay un error
+        }
+
         if (!row) {
             db.run(`INSERT INTO logs (phone, state) VALUES (?, ?)`, [phone, "hello"], function(insertErr) {
                 if (insertErr) {
                     console.error("Error en la inserción:", insertErr.message);
                     return callback(null);
                 }
-                return callback({ state: "hello"});
+                return callback({ state: "hello" });
             });
         } else {
-            // Si el usuario ya existe, devuelve el registro encontrado
-            return callback(row);
-        }
-        if (err) {
-            // Si hay un error en la consulta inicial, muestra el error y devuelve null
-            console.error("Error en la consulta logs SELECT:", err.message);
-            return callback(null);
+            return callback(row); // Devuelve el registro encontrado
         }
     });
 };
+
+
 const setLogs = (phone, state) => {
     db.run(`UPDATE logs SET state = ? WHERE phone = ?`, [state, phone], (err) => {
         if (err) {

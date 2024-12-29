@@ -8,7 +8,7 @@ let primeraBienvenida = `🌟 *¡Bienvenido a TU BOT!* 🌟
 
 🤖 Este bot está aquí para agilizar tu experiencia, pero siempre puedes esperar para hablar con una persona si prefieres. Solo envía *adiós*.
 
-¡Gracias por elegir Parma! 😊
+¡Gracias por elegir *nombre de tu negocio*! 😊
 `;
 const link = (link, editar) => {
     if(editar){
